@@ -109,6 +109,7 @@ export type Database = {
       orders: {
         Row: {
           admin_notes: string
+          client_request_id: string | null
           created_at: string
           customer_name: string
           customer_phone: string
@@ -126,6 +127,7 @@ export type Database = {
         }
         Insert: {
           admin_notes?: string
+          client_request_id?: string | null
           created_at?: string
           customer_name: string
           customer_phone: string
@@ -143,6 +145,7 @@ export type Database = {
         }
         Update: {
           admin_notes?: string
+          client_request_id?: string | null
           created_at?: string
           customer_name?: string
           customer_phone?: string
@@ -263,6 +266,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_tracked_order: { Args: { p_token: string }; Returns: Json }
+      get_week_status: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -271,6 +276,21 @@ export type Database = {
         Returns: boolean
       }
       next_order_number: { Args: never; Returns: string }
+      place_order: {
+        Args: {
+          p_items: Json
+          p_location: string
+          p_mix: boolean
+          p_name: string
+          p_phone: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
+      submit_review: {
+        Args: { p_comment: string; p_rating: number; p_token: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin"
