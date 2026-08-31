@@ -10,16 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as OurStoryRouteImport } from './routes/our-story'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
@@ -52,15 +63,46 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/order': typeof OrderRoute
   '/our-story': typeof OurStoryRoute
   '/reviews': typeof ReviewsRoute
   '/shop': typeof ShopRoute
   '/track': typeof TrackRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/admin/orders/': typeof AdminOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,27 +112,44 @@ export interface FileRoutesByTo {
   '/reviews': typeof ReviewsRoute
   '/shop': typeof ShopRoute
   '/track': typeof TrackRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/admin/orders': typeof AdminOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/order': typeof OrderRoute
   '/our-story': typeof OurStoryRoute
   '/reviews': typeof ReviewsRoute
   '/shop': typeof ShopRoute
   '/track': typeof TrackRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/admin/orders/': typeof AdminOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/how-it-works'
     | '/order'
     | '/our-story'
     | '/reviews'
     | '/shop'
     | '/track'
+    | '/admin/reviews'
+    | '/admin/settings'
+    | '/admin/'
+    | '/admin/orders/$id'
+    | '/admin/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,19 +159,31 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/shop'
     | '/track'
+    | '/admin/reviews'
+    | '/admin/settings'
+    | '/admin'
+    | '/admin/orders/$id'
+    | '/admin/orders'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/how-it-works'
     | '/order'
     | '/our-story'
     | '/reviews'
     | '/shop'
     | '/track'
+    | '/admin/reviews'
+    | '/admin/settings'
+    | '/admin/'
+    | '/admin/orders/$id'
+    | '/admin/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   HowItWorksRoute: typeof HowItWorksRoute
   OrderRoute: typeof OrderRoute
   OurStoryRoute: typeof OurStoryRoute
@@ -128,6 +199,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/how-it-works': {
@@ -172,11 +250,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders/': {
+      id: '/admin/orders/'
+      path: '/orders'
+      fullPath: '/admin/orders/'
+      preLoaderRoute: typeof AdminOrdersIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders/$id': {
+      id: '/admin/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AdminOrdersIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminReviewsRoute: typeof AdminReviewsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
+  AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminReviewsRoute: AdminReviewsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminOrdersIdRoute: AdminOrdersIdRoute,
+  AdminOrdersIndexRoute: AdminOrdersIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   HowItWorksRoute: HowItWorksRoute,
   OrderRoute: OrderRoute,
   OurStoryRoute: OurStoryRoute,
