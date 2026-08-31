@@ -18,6 +18,8 @@ import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 
@@ -66,6 +68,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -86,6 +98,8 @@ export interface FileRoutesByFullPath {
   '/reviews': typeof ReviewsRoute
   '/shop': typeof ShopRoute
   '/track': typeof TrackRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
@@ -98,6 +112,8 @@ export interface FileRoutesByTo {
   '/reviews': typeof ReviewsRoute
   '/shop': typeof ShopRoute
   '/track': typeof TrackRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin': typeof AdminIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
@@ -112,6 +128,8 @@ export interface FileRoutesById {
   '/reviews': typeof ReviewsRoute
   '/shop': typeof ShopRoute
   '/track': typeof TrackRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
@@ -127,6 +145,8 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/shop'
     | '/track'
+    | '/admin/reviews'
+    | '/admin/settings'
     | '/admin/'
     | '/admin/orders/$id'
     | '/admin/orders/'
@@ -139,6 +159,8 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/shop'
     | '/track'
+    | '/admin/reviews'
+    | '/admin/settings'
     | '/admin'
     | '/admin/orders/$id'
     | '/admin/orders'
@@ -152,6 +174,8 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/shop'
     | '/track'
+    | '/admin/reviews'
+    | '/admin/settings'
     | '/admin/'
     | '/admin/orders/$id'
     | '/admin/orders/'
@@ -233,6 +257,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders/': {
       id: '/admin/orders/'
       path: '/orders'
@@ -251,12 +289,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminReviewsRoute: typeof AdminReviewsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminOrdersIdRoute: typeof AdminOrdersIdRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminReviewsRoute: AdminReviewsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminOrdersIdRoute: AdminOrdersIdRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
