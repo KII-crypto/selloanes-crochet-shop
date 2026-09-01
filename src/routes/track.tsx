@@ -13,9 +13,11 @@ import { rand, formatDate, type TrackedOrder } from "@/lib/shop";
 type Search = { t?: string };
 
 export const Route = createFileRoute("/track")({
-  validateSearch: (search: Record<string, unknown>): Search => ({
-    t: typeof search["t"] === "string" ? search["t"].slice(0, 120) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): Search => {
+    const out: Search = {};
+    if (typeof search["t"] === "string") out.t = search["t"].slice(0, 120);
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Track Your Order — Selloane's Crochet" },

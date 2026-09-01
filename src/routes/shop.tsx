@@ -95,7 +95,7 @@ function ShopPage() {
                         onClick={() =>
                           navigate({
                             to: "/order",
-                            search: { add: p.slug, colour: colour || undefined },
+                            search: colour ? { add: p.slug, colour } : { add: p.slug },
                           })
                         }
                         className="h-12 w-full rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground uppercase transition-transform hover:-translate-y-0.5"
