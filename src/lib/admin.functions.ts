@@ -22,7 +22,20 @@ export const adminWhoAmI = createServerFn({ method: "POST" })
 
 export const adminOverview = adminFn().handler(async ({ context }) => {
   await assertAdmin(context as any);
-  const { data: week } = await context.supabase.rpc("get_week_status");
+  const { data: settings } = await context.supabase
+    .from("business_settings")
+    .select("weekly_order_limit")
+    .eq("id", 1)
+    .maybeSingle();
+  const monday = new Date();
+  const day = (monday.getUTCDay() + 6) % 7;
+  monday.setUTCDate(monday.getUTCDate() - day);
+  const weekStart = monday.toISOString().slice(0, 10);
+  const { count: usedCount } = await context.supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("week_start", weekStart)
+    .neq("status", "Cancelled");
   const { data: orders } = await context.supabase
     .from("orders")
     .select("id, order_number, customer_name, delivery_location, total, status, created_at")
@@ -37,7 +50,7 @@ export const adminOverview = adminFn().handler(async ({ context }) => {
     counts[o.status as string] = (counts[o.status as string] ?? 0) + 1;
     if (o.status !== "Cancelled") revenue += Number(o.total);
   }
-  const w = (week ?? { used: 0, limit: 5 }) as { used: number; limit: number };
+  const w = { used: usedCount ?? 0, limit: Number(settings?.weekly_order_limit ?? 5) };
   return {
     week: { used: Number(w.used), limit: Number(w.limit) },
     counts,
