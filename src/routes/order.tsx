@@ -13,10 +13,12 @@ import { placeOrder } from "@/lib/storefront.functions";
 type Search = { add?: string; colour?: string };
 
 export const Route = createFileRoute("/order")({
-  validateSearch: (search: Record<string, unknown>): Search => ({
-    add: typeof search["add"] === "string" ? search["add"].slice(0, 40) : undefined,
-    colour: typeof search["colour"] === "string" ? search["colour"].slice(0, 40) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): Search => {
+    const out: Search = {};
+    if (typeof search["add"] === "string") out.add = search["add"].slice(0, 40);
+    if (typeof search["colour"] === "string") out.colour = search["colour"].slice(0, 40);
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Place an Order — Selloane's Crochet" },

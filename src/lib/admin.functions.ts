@@ -34,7 +34,7 @@ export const adminOverview = adminFn().handler(async ({ context }) => {
   for (const s of ORDER_STATUSES) counts[s] = 0;
   let revenue = 0;
   for (const o of rows) {
-    counts[o.status] = (counts[o.status] ?? 0) + 1;
+    counts[o.status as string] = (counts[o.status as string] ?? 0) + 1;
     if (o.status !== "Cancelled") revenue += Number(o.total);
   }
   const w = (week ?? { used: 0, limit: 5 }) as { used: number; limit: number };
@@ -57,7 +57,7 @@ export const adminListOrders = adminFn()
       .select("id, order_number, customer_name, customer_phone, delivery_location, total, status, created_at, expected_delivery_date")
       .order("created_at", { ascending: false })
       .limit(300);
-    if (data.status !== "all") query = query.eq("status", data.status);
+    if (data.status !== "all") query = query.eq("status", data.status as never);
     const term = data.search.trim();
     if (term) {
       const safe = term.replace(/[%,()]/g, "");
@@ -103,7 +103,7 @@ export const adminUpdateOrder = adminFn()
     if (data.expected_delivery_date !== undefined)
       patch["expected_delivery_date"] = data.expected_delivery_date || null;
     if (data.admin_notes !== undefined) patch["admin_notes"] = data.admin_notes;
-    const { error } = await context.supabase.from("orders").update(patch).eq("id", data.id);
+    const { error } = await context.supabase.from("orders").update(patch as never).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
