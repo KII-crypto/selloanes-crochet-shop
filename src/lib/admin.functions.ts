@@ -3,7 +3,6 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { ORDER_STATUSES } from "./shop";
 
-const adminFn = () => createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]);
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
@@ -20,7 +19,7 @@ export const adminWhoAmI = createServerFn({ method: "POST" })
     return { isAdmin: Boolean(data) };
   });
 
-export const adminOverview = adminFn().handler(async ({ context }) => {
+export const adminOverview = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   await assertAdmin(context as any);
   const { data: settings } = await context.supabase
     .from("business_settings")
@@ -59,7 +58,7 @@ export const adminOverview = adminFn().handler(async ({ context }) => {
   };
 });
 
-export const adminListOrders = adminFn()
+export const adminListOrders = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
     z.object({ search: z.string().max(80).default(""), status: z.string().max(30).default("all") }).parse(d ?? {}),
   )
@@ -83,7 +82,7 @@ export const adminListOrders = adminFn()
     return { orders: rows ?? [] };
   });
 
-export const adminGetOrder = adminFn()
+export const adminGetOrder = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
@@ -98,7 +97,7 @@ export const adminGetOrder = adminFn()
     return { order, items: items ?? [] };
   });
 
-export const adminUpdateOrder = adminFn()
+export const adminUpdateOrder = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
     z
       .object({
@@ -121,7 +120,7 @@ export const adminUpdateOrder = adminFn()
     return { ok: true };
   });
 
-export const adminSettingsData = adminFn().handler(async ({ context }) => {
+export const adminSettingsData = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   await assertAdmin(context as any);
   const [settings, products, locations] = await Promise.all([
     context.supabase.from("business_settings").select("*").eq("id", 1).maybeSingle(),
@@ -135,7 +134,7 @@ export const adminSettingsData = adminFn().handler(async ({ context }) => {
   };
 });
 
-export const adminSaveSettings = adminFn()
+export const adminSaveSettings = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
     z
       .object({
@@ -153,7 +152,7 @@ export const adminSaveSettings = adminFn()
     return { ok: true };
   });
 
-export const adminSaveProduct = adminFn()
+export const adminSaveProduct = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
     z
       .object({
@@ -172,7 +171,7 @@ export const adminSaveProduct = adminFn()
     return { ok: true };
   });
 
-export const adminSaveLocation = adminFn()
+export const adminSaveLocation = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
     z
       .object({
@@ -199,7 +198,7 @@ export const adminSaveLocation = adminFn()
     return { ok: true };
   });
 
-export const adminDeleteLocation = adminFn()
+export const adminDeleteLocation = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
@@ -208,7 +207,7 @@ export const adminDeleteLocation = adminFn()
     return { ok: true };
   });
 
-export const adminListReviews = adminFn().handler(async ({ context }) => {
+export const adminListReviews = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   await assertAdmin(context as any);
   const { data, error } = await context.supabase
     .from("reviews")
@@ -218,7 +217,7 @@ export const adminListReviews = adminFn().handler(async ({ context }) => {
   return { reviews: data ?? [] };
 });
 
-export const adminSetReviewApproved = adminFn()
+export const adminSetReviewApproved = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid(), approved: z.boolean() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
@@ -227,7 +226,7 @@ export const adminSetReviewApproved = adminFn()
     return { ok: true };
   });
 
-export const adminDeleteReview = adminFn()
+export const adminDeleteReview = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
