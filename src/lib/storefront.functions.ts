@@ -5,19 +5,19 @@ const orderInput = z.object({
   name: z.string().min(2).max(80),
   phone: z.string().regex(/^[0-9+ ()-]{8,20}$/),
   location: z.string().min(1).max(120),
-  mixColours: z.boolean(),
   requestId: z.string().min(8).max(64),
+  /** One entry per individual scrunchie, with its own colours. */
   items: z
     .array(
       z.object({
         slug: z.string().min(1).max(40),
-        quantity: z.number().int().min(0).max(50),
-        colours: z.array(z.string().max(40)).max(12),
+        colours: z.array(z.string().max(40)).min(1).max(9),
       }),
     )
     .min(1)
-    .max(10),
+    .max(50),
 });
+
 
 const ERRORS: Record<string, string> = {
   WEEKLY_LIMIT: "We've reached our order limit for this week. Please check back next week.",
@@ -26,6 +26,8 @@ const ERRORS: Record<string, string> = {
   INVALID_LOCATION: "Please choose an available delivery location.",
   PRODUCT_UNAVAILABLE: "One of the sizes you chose is no longer available.",
   EMPTY_ORDER: "Please add at least one scrunchie to your order.",
+  MISSING_COLOUR: "Please choose at least one colour for every scrunchie.",
+
   QUANTITY_TOO_LARGE: "That quantity is too large — please contact us for bulk orders.",
   NOT_DELIVERED: "You can leave a review once your order has been delivered.",
   ALREADY_REVIEWED: "You've already left a review for this order. Thank you! ♡",
@@ -71,17 +73,17 @@ export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => orderInput.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const items = data.items.filter((i) => i.quantity > 0);
+    const items = data.items.filter((i) => i.colours.length > 0);
     if (items.length === 0) return { ok: false as const, error: ERRORS["EMPTY_ORDER"]! };
 
-    const { data: result, error } = await supabaseAdmin.rpc("place_order", {
+    const { data: result, error } = await (supabaseAdmin.rpc as any)("place_order", {
       p_name: data.name,
       p_phone: data.phone,
       p_location: data.location,
       p_items: items,
-      p_mix: data.mixColours,
       p_request_id: data.requestId,
     });
+
 
     if (error) {
       const isLimit = error.message.includes("WEEKLY_LIMIT");
