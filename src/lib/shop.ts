@@ -88,6 +88,15 @@ export type TrackedOrder = {
   mixed_colour_fee: number;
   total: number;
   expected_delivery_date: string | null;
-  items: { name: string; quantity: number; unit_price: number; colours: string[] }[];
+  items: {
+    name: string;
+    quantity: number;
+    unit_price: number;
+    colours: string[];
+    is_mixed?: boolean;
+    mixed_fee?: number;
+    line_total?: number;
+  }[];
+
   review: { rating: number; comment: string; approved: boolean } | null;
 };
