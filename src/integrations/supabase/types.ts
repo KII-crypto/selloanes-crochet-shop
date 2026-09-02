@@ -70,6 +70,9 @@ export type Database = {
           colours: string[]
           created_at: string
           id: string
+          is_mixed: boolean
+          line_total: number
+          mixed_fee: number
           order_id: string
           product_name: string
           product_slug: string
@@ -80,6 +83,9 @@ export type Database = {
           colours?: string[]
           created_at?: string
           id?: string
+          is_mixed?: boolean
+          line_total?: number
+          mixed_fee?: number
           order_id: string
           product_name: string
           product_slug: string
@@ -90,6 +96,9 @@ export type Database = {
           colours?: string[]
           created_at?: string
           id?: string
+          is_mixed?: boolean
+          line_total?: number
+          mixed_fee?: number
           order_id?: string
           product_name?: string
           product_slug?: string
@@ -280,7 +289,6 @@ export type Database = {
         Args: {
           p_items: Json
           p_location: string
-          p_mix: boolean
           p_name: string
           p_phone: string
           p_request_id: string
