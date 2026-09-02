@@ -26,6 +26,8 @@ const ERRORS: Record<string, string> = {
   INVALID_LOCATION: "Please choose an available delivery location.",
   PRODUCT_UNAVAILABLE: "One of the sizes you chose is no longer available.",
   EMPTY_ORDER: "Please add at least one scrunchie to your order.",
+  MISSING_COLOUR: "Please choose at least one colour for every scrunchie.",
+
   QUANTITY_TOO_LARGE: "That quantity is too large — please contact us for bulk orders.",
   NOT_DELIVERED: "You can leave a review once your order has been delivered.",
   ALREADY_REVIEWED: "You've already left a review for this order. Thank you! ♡",
