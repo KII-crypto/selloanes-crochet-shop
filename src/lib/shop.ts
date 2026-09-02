@@ -43,6 +43,21 @@ export const TIMELINE_STATUSES: OrderStatus[] = [
   "Delivered",
 ];
 
+export const STATUS_LABELS: Record<OrderStatus, string> = {
+  Received: "🟡 Awaiting confirmation",
+  Confirmed: "🟢 Order confirmed",
+  "Being Prepared": "🧶 Being prepared",
+  Ready: "📦 Ready",
+  "Out for Delivery": "🚚 Out for delivery",
+  Delivered: "✅ Order received / delivered",
+  Cancelled: "❌ Order rejected",
+};
+
+export function statusLabel(status: string): string {
+  return STATUS_LABELS[status as OrderStatus] ?? status;
+}
+
+
 export function rand(amount: number | string): string {
   const n = typeof amount === "string" ? Number(amount) : amount;
   return `R${Number.isInteger(n) ? n : n.toFixed(2)}`;
