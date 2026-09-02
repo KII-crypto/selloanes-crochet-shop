@@ -71,17 +71,17 @@ export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => orderInput.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const items = data.items.filter((i) => i.quantity > 0);
+    const items = data.items.filter((i) => i.colours.length > 0);
     if (items.length === 0) return { ok: false as const, error: ERRORS["EMPTY_ORDER"]! };
 
-    const { data: result, error } = await supabaseAdmin.rpc("place_order", {
+    const { data: result, error } = await (supabaseAdmin.rpc as any)("place_order", {
       p_name: data.name,
       p_phone: data.phone,
       p_location: data.location,
       p_items: items,
-      p_mix: data.mixColours,
       p_request_id: data.requestId,
     });
+
 
     if (error) {
       const isLimit = error.message.includes("WEEKLY_LIMIT");
