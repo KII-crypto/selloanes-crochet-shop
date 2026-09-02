@@ -5,19 +5,19 @@ const orderInput = z.object({
   name: z.string().min(2).max(80),
   phone: z.string().regex(/^[0-9+ ()-]{8,20}$/),
   location: z.string().min(1).max(120),
-  mixColours: z.boolean(),
   requestId: z.string().min(8).max(64),
+  /** One entry per individual scrunchie, with its own colours. */
   items: z
     .array(
       z.object({
         slug: z.string().min(1).max(40),
-        quantity: z.number().int().min(0).max(50),
-        colours: z.array(z.string().max(40)).max(12),
+        colours: z.array(z.string().max(40)).min(1).max(9),
       }),
     )
     .min(1)
-    .max(10),
+    .max(50),
 });
+
 
 const ERRORS: Record<string, string> = {
   WEEKLY_LIMIT: "We've reached our order limit for this week. Please check back next week.",
