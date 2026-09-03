@@ -91,7 +91,7 @@ export const adminGetOrder = createServerFn({ method: "POST" }).middleware([requ
     if (!order) throw new Error("Order not found");
     const { data: items } = await context.supabase
       .from("order_items")
-      .select("product_name, quantity, unit_price, colours")
+      .select("product_name, product_slug, quantity, unit_price, colours, is_mixed, mixed_fee, line_total")
       .eq("order_id", data.id)
       .order("created_at");
     return { order, items: items ?? [] };
