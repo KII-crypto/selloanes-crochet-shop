@@ -139,15 +139,21 @@ function OrderView({ order, token }: { order: TrackedOrder; token: string }) {
             <div key={i} className="flex justify-between gap-3 text-sm">
               <span>
                 <span className="font-semibold">
-                  {item.name} x{item.quantity}
+                  Scrunchie #{i + 1} — {item.name}
                 </span>
                 {item.colours.length > 0 && (
-                  <span className="block text-xs text-muted-foreground">{item.colours.join(", ")}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {item.colours.join(" + ")}
+                    {item.colours.length > 1 ? " · mixed colours" : " · single colour"}
+                  </span>
                 )}
               </span>
-              <span className="font-semibold">{rand(Number(item.unit_price) * item.quantity)}</span>
+              <span className="font-semibold">
+                {rand(Number(item.line_total ?? Number(item.unit_price) * item.quantity))}
+              </span>
             </div>
           ))}
+
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>Subtotal</span>
             <span>{rand(order.subtotal)}</span>
