@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { adminOverview } from "@/lib/admin.functions";
-import { rand, formatDate, ORDER_STATUSES } from "@/lib/shop";
+import { rand, formatDate, statusLabel, ORDER_STATUSES } from "@/lib/shop";
 
 export const Route = createFileRoute("/admin/")({
   component: Dashboard,
@@ -103,7 +103,7 @@ function Dashboard() {
                 </span>
               </span>
               <span className="flex items-center gap-3">
-                <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{o.status}</span>
+                <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{statusLabel(o.status)}</span>
                 <span className="font-semibold">{rand(o.total)}</span>
               </span>
             </Link>
