@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { adminOverview } from "@/lib/admin.functions";
-import { rand, formatDate, ORDER_STATUSES } from "@/lib/shop";
+import { rand, formatDate, statusLabel, ORDER_STATUSES } from "@/lib/shop";
 
 export const Route = createFileRoute("/admin/")({
   component: Dashboard,
@@ -46,14 +46,24 @@ function Dashboard() {
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat
+          label="Total orders"
+          value={String(ORDER_STATUSES.reduce((sum, s) => sum + (data.counts[s] ?? 0), 0))}
+        />
+        <Stat label="🟡 Pending" value={String(data.counts["Received"] ?? 0)} />
+        <Stat
+          label="🟢 Confirmed"
+          value={String(
+            (["Confirmed", "Being Prepared", "Ready", "Out for Delivery"] as const).reduce(
+              (sum, s) => sum + (data.counts[s] ?? 0),
+              0,
+            ),
+          )}
+        />
+        <Stat label="📦 Received / delivered" value={String(data.counts["Delivered"] ?? 0)} />
+        <Stat label="❌ Rejected" value={String(data.counts["Cancelled"] ?? 0)} />
         <Stat label="Orders this week" value={`${data.week.used} / ${data.week.limit}`} />
         <Stat label="Slots left" value={String(Math.max(0, data.week.limit - data.week.used))} />
-        <Stat label="Active orders" value={String(
-          ORDER_STATUSES.filter((s) => s !== "Delivered" && s !== "Cancelled").reduce(
-            (sum, s) => sum + (data.counts[s] ?? 0),
-            0,
-          ),
-        )} />
         <Stat label="Revenue (last 200)" value={rand(data.revenue)} />
       </div>
 
@@ -62,11 +72,12 @@ function Dashboard() {
         <div className="mt-4 flex flex-wrap gap-2">
           {ORDER_STATUSES.map((s) => (
             <span key={s} className="rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-primary">
-              {s}: {data.counts[s] ?? 0}
+              {statusLabel(s)}: {data.counts[s] ?? 0}
             </span>
           ))}
         </div>
       </section>
+
 
       <section className="surface-card p-6">
         <div className="flex items-center justify-between">
@@ -92,7 +103,7 @@ function Dashboard() {
                 </span>
               </span>
               <span className="flex items-center gap-3">
-                <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{o.status}</span>
+                <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{statusLabel(o.status)}</span>
                 <span className="font-semibold">{rand(o.total)}</span>
               </span>
             </Link>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { adminGetOrder, adminUpdateOrder } from "@/lib/admin.functions";
-import { rand, formatDate, ORDER_STATUSES, type OrderStatus } from "@/lib/shop";
+import { rand, formatDate, statusLabel, ORDER_STATUSES, type OrderStatus } from "@/lib/shop";
 import { StatusTimeline } from "@/components/StatusTimeline";
 
 export const Route = createFileRoute("/admin/orders/$id")({
@@ -54,6 +54,20 @@ function OrderDetail() {
     }
   }
 
+  async function quickStatus(next: OrderStatus) {
+    setBusy(true);
+    try {
+      await adminUpdateOrder({ data: { id, status: next } });
+      setStatus(next);
+      toast.success(`Order marked ${statusLabel(next)}`);
+      await queryClient.invalidateQueries({ queryKey: ["admin"] });
+    } catch {
+      toast.error("Couldn't update the order.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Link to="/admin/orders" className="inline-flex items-center gap-2 text-sm font-bold text-primary uppercase">
@@ -65,9 +79,38 @@ function OrderDetail() {
           <section className="surface-card p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h1 className="font-display text-2xl font-semibold text-primary">Order #{order.order_number}</h1>
-              <span className="rounded-full bg-secondary px-3 py-1 text-sm font-bold text-primary">{order.status}</span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-sm font-bold text-primary">
+                {statusLabel(order.status)}
+              </span>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">Placed {formatDate(order.created_at)}</p>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => quickStatus("Confirmed")}
+                className="h-11 rounded-full bg-primary px-6 text-xs font-bold tracking-wide text-primary-foreground uppercase disabled:opacity-60"
+              >
+                Confirm order
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => quickStatus("Delivered")}
+                className="h-11 rounded-full bg-sage px-6 text-xs font-bold tracking-wide text-primary-foreground uppercase disabled:opacity-60"
+              >
+                Mark received / delivered
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => quickStatus("Cancelled")}
+                className="h-11 rounded-full border border-destructive px-6 text-xs font-bold tracking-wide text-destructive uppercase disabled:opacity-60"
+              >
+                Reject order
+              </button>
+            </div>
 
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
               <div>
@@ -93,27 +136,38 @@ function OrderDetail() {
             </dl>
 
             <div className="mt-6 space-y-2">
+              <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+                Scrunchies ({query.data.items.length})
+              </p>
               {query.data.items.map((item: any, i: number) => (
-                <div key={i} className="flex justify-between gap-3 text-sm">
+                <div key={i} className="flex justify-between gap-3 border-b border-border pb-2 text-sm last:border-0">
                   <span>
                     <span className="font-semibold">
-                      {item.product_name} x{item.quantity}
+                      Scrunchie #{i + 1} — {item.product_name}
                     </span>
-                    {item.colours?.length > 0 && (
-                      <span className="block text-xs text-muted-foreground">{item.colours.join(", ")}</span>
-                    )}
+                    <span className="block text-xs text-muted-foreground">
+                      {(item.colours ?? []).join(" + ") || "—"}
+                      {item.is_mixed ? " · mixed colour (+" + rand(item.mixed_fee) + ")" : " · single colour"}
+                    </span>
                   </span>
-                  <span className="font-semibold">{rand(Number(item.unit_price) * item.quantity)}</span>
+                  <span className="font-semibold">
+                    {rand(Number(item.line_total ?? Number(item.unit_price) * item.quantity))}
+                  </span>
                 </div>
               ))}
               {Number(order.mixed_colour_fee) > 0 && (
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Mixed colours</span>
+                  <span>Mixed-colour fees</span>
                   <span>{rand(order.mixed_colour_fee)}</span>
                 </div>
               )}
+              <div className="flex justify-between border-t border-border pt-2 font-display text-lg font-semibold text-primary">
+                <span>Order total</span>
+                <span>{rand(order.total)}</span>
+              </div>
             </div>
           </section>
+
 
           <section className="surface-card p-6">
             <h2 className="font-display text-lg font-semibold text-primary">Update order</h2>

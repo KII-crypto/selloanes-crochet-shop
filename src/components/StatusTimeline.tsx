@@ -1,11 +1,11 @@
 import { Check } from "lucide-react";
-import { TIMELINE_STATUSES, type OrderStatus } from "@/lib/shop";
+import { TIMELINE_STATUSES, statusLabel, type OrderStatus } from "@/lib/shop";
 
 export function StatusTimeline({ status }: { status: OrderStatus }) {
   if (status === "Cancelled") {
     return (
       <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-center">
-        <p className="font-display text-lg font-semibold text-destructive">Order cancelled</p>
+        <p className="font-display text-lg font-semibold text-destructive">❌ Order rejected</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Please get in touch if you think this was a mistake.
         </p>
@@ -38,7 +38,7 @@ export function StatusTimeline({ status }: { status: OrderStatus }) {
             </div>
             <div className="pb-6">
               <p className={`font-semibold ${isCurrent ? "text-primary" : done ? "text-foreground" : "text-muted-foreground"}`}>
-                {step}
+                {statusLabel(step)}
               </p>
               {isCurrent && <p className="text-xs text-muted-foreground">Current status</p>}
             </div>
