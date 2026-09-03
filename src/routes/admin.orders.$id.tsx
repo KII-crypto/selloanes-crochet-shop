@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { adminGetOrder, adminUpdateOrder } from "@/lib/admin.functions";
-import { rand, formatDate, ORDER_STATUSES, type OrderStatus } from "@/lib/shop";
+import { rand, formatDate, statusLabel, ORDER_STATUSES, type OrderStatus } from "@/lib/shop";
 import { StatusTimeline } from "@/components/StatusTimeline";
 
 export const Route = createFileRoute("/admin/orders/$id")({
