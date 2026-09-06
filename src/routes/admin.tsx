@@ -174,7 +174,9 @@ function AdminSignIn() {
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
             className="mt-4 w-full text-center text-sm font-semibold text-primary underline"
           >
-            {mode === "signin" ? "First time? Create the owner account" : "Back to sign in"}
+            {mode === "signin"
+              ? `Create an owner login (${owner.data.used ?? 0} of ${owner.data.limit ?? 2} used)`
+              : "Back to sign in"}
           </button>
         )}
         <Link to="/" className="mt-5 block text-center text-xs text-muted-foreground">
@@ -218,6 +220,12 @@ function NotAuthorised({ email }: { email: string }) {
           >
             Claim owner access
           </button>
+        )}
+        {owner.data && !owner.data.exists && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {owner.data.used} of {owner.data.limit} owner logins used.
+          </p>
+        )}
         )}
         <button
           onClick={() => supabase.auth.signOut()}
