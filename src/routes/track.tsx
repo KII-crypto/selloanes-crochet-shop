@@ -103,9 +103,24 @@ function TrackPage() {
           </form>
         )}
 
-        {t && query.isLoading && (
+        {t && query.isPending && (
           <div className="flex justify-center py-16">
             <Loader2 className="size-8 animate-spin text-primary" />
+          </div>
+        )}
+
+        {t && !query.isPending && query.isError && (
+          <div className="surface-card mx-auto max-w-lg p-8 text-center">
+            <p className="font-display text-xl font-semibold text-primary">We couldn't load your order</p>
+            <p className="mt-2 text-muted-foreground">
+              Your link is still valid — the connection just hiccuped. Please try again.
+            </p>
+            <button
+              onClick={() => query.refetch()}
+              className="mt-6 rounded-full border border-border px-5 py-2 text-sm font-bold text-primary uppercase"
+            >
+              Try again
+            </button>
           </div>
         )}
 
@@ -121,6 +136,7 @@ function TrackPage() {
             </button>
           </div>
         )}
+
 
         {t && query.data?.ok && <OrderView order={query.data.order as TrackedOrder} token={t} />}
       </Section>
