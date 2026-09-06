@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { ORDER_STATUSES } from "./shop";
 
+const OWNER_LIMIT = 2;
+
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
@@ -244,7 +246,8 @@ export const claimOwnerAccess = createServerFn({ method: "POST" })
       .select("id", { count: "exact", head: true })
       .eq("role", "admin");
     if (countError) throw new Error(countError.message);
-    if ((count ?? 0) > 0) return { ok: false as const, error: "An owner account already exists." };
+    if ((count ?? 0) >= OWNER_LIMIT)
+      return { ok: false as const, error: "Both owner accounts are already taken." };
     const { error } = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: context.userId, role: "admin" });
@@ -258,5 +261,6 @@ export const ownerExists = createServerFn({ method: "GET" }).handler(async () =>
     .from("user_roles")
     .select("id", { count: "exact", head: true })
     .eq("role", "admin");
-  return { exists: (count ?? 0) > 0 };
+  const used = count ?? 0;
+  return { exists: used >= OWNER_LIMIT, used, limit: OWNER_LIMIT };
 });
