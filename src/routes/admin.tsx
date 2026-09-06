@@ -226,7 +226,6 @@ function NotAuthorised({ email }: { email: string }) {
             {owner.data.used} of {owner.data.limit} owner logins used.
           </p>
         )}
-        )}
         <button
           onClick={() => supabase.auth.signOut()}
           className="mt-4 w-full text-sm font-semibold text-primary underline"
