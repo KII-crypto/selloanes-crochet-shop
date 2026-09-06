@@ -105,6 +105,27 @@ export const getTrackedOrder = createServerFn({ method: "GET" })
 
   });
 
+export const findOrder = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z.object({ number: z.string().trim().min(1).max(40), phone: z.string().trim().min(4).max(20) }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: found, error } = await (supabaseAdmin.rpc as any)("find_tracked_order", {
+      p_number: data.number,
+      p_phone: data.phone,
+    });
+    if (error) throw new Error(error.message);
+    if (!found) {
+      return {
+        ok: false as const,
+        error: "We couldn't find an order with that order number and phone number. Please check both and try again.",
+      };
+    }
+    return { ok: true as const, token: (found as { token: string }).token };
+  });
+
+
 export const submitReview = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
     z.object({ token: z.string().min(10).max(120), rating: z.number().int().min(1).max(5), comment: z.string().max(600) }).parse(data),

@@ -67,41 +67,96 @@ function TrackPage() {
 
       <Section className="pt-4">
         {!t && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const value = input.trim();
-              if (!value) return;
-              const raw = value.includes("t=") ? value.split("t=").pop()!.split("&")[0]! : value;
-              const token = raw.replace(/^#/, "").trim();
-              if (!token) return;
-              navigate({ to: "/track", search: { t: token } });
-            }}
-            className="surface-card mx-auto max-w-lg p-6"
-          >
-            <label className="block">
-              <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
-                Tracking link or code
-              </span>
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="mt-2 h-12 w-full rounded-2xl border border-input bg-card px-4 text-base outline-none focus:border-primary"
-                placeholder="Paste your tracking link here"
-              />
-            </label>
-            <button
-              type="submit"
-              className="mt-5 h-12 w-full rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground uppercase"
+          <div className="mx-auto max-w-lg space-y-6">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const value = input.trim();
+                if (!value) return;
+                const raw = value.includes("t=") ? value.split("t=").pop()!.split("&")[0]! : value;
+                const token = raw.replace(/^#/, "").trim();
+                if (!token) return;
+                navigate({ to: "/track", search: { t: token } });
+              }}
+              className="surface-card p-6"
             >
-              Find my order
-            </button>
-            <p className="mt-4 text-xs text-muted-foreground">
-              For your privacy, orders can only be opened with their private link — an order number on its own
-              won't work.
-            </p>
-          </form>
+              <label className="block">
+                <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+                  Tracking link or code
+                </span>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className="mt-2 h-12 w-full rounded-2xl border border-input bg-card px-4 text-base outline-none focus:border-primary"
+                  placeholder="Paste your tracking link here"
+                />
+              </label>
+              <button
+                type="submit"
+                className="mt-5 h-12 w-full rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground uppercase"
+              >
+                Find my order
+              </button>
+            </form>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!orderNumber.trim() || !phone.trim()) {
+                  toast.error("Please enter both your order number and phone number.");
+                  return;
+                }
+                setLooking(true);
+                try {
+                  const result = await lookup({ data: { number: orderNumber.trim(), phone: phone.trim() } });
+                  if (!result.ok) {
+                    toast.error(result.error);
+                    return;
+                  }
+                  navigate({ to: "/track", search: { t: result.token } });
+                } catch {
+                  toast.error("Something went wrong. Please try again.");
+                } finally {
+                  setLooking(false);
+                }
+              }}
+              className="surface-card p-6"
+            >
+              <h2 className="font-display text-lg font-semibold text-primary">Lost your link?</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Enter your order number and the phone number you ordered with.
+              </p>
+              <label className="mt-4 block">
+                <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Order number</span>
+                <input
+                  value={orderNumber}
+                  onChange={(e) => setOrderNumber(e.target.value)}
+                  className="mt-2 h-12 w-full rounded-2xl border border-input bg-card px-4 text-base outline-none focus:border-primary"
+                  placeholder="SC-0001"
+                />
+              </label>
+              <label className="mt-4 block">
+                <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Phone number</span>
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  inputMode="tel"
+                  className="mt-2 h-12 w-full rounded-2xl border border-input bg-card px-4 text-base outline-none focus:border-primary"
+                  placeholder="0660627555"
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={looking}
+                className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground uppercase disabled:opacity-60"
+              >
+                {looking && <Loader2 className="size-4 animate-spin" />}
+                Find my order
+              </button>
+            </form>
+          </div>
         )}
+
 
         {t && query.isPending && (
           <div className="flex justify-center py-16">
