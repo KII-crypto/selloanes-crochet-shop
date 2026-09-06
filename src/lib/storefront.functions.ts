@@ -98,8 +98,11 @@ export const getTrackedOrder = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order, error } = await supabaseAdmin.rpc("get_tracked_order", { p_token: data.token });
-    if (error || !order) return { ok: false as const, error: "We couldn't find an order for that link." };
+    // A backend hiccup must retry, not tell the customer their link is dead.
+    if (error) throw new Error(error.message);
+    if (!order) return { ok: false as const, error: "We couldn't find an order for that link." };
     return { ok: true as const, order };
+
   });
 
 export const submitReview = createServerFn({ method: "POST" })
