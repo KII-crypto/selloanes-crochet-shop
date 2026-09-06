@@ -45,8 +45,13 @@ function TrackPage() {
     queryKey: ["tracking", t],
     queryFn: () => fetchOrder({ data: { token: t! } }),
     enabled: Boolean(t),
-    refetchInterval: 30_000,
+    refetchInterval: 10_000,
+    refetchOnWindowFocus: true,
+    retry: 3,
+    // Never blank out or "lose" the order while a refresh is in flight.
+    placeholderData: (prev) => prev,
   });
+
 
   return (
     <SiteShell>
