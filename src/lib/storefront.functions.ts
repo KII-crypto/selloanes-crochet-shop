@@ -94,7 +94,7 @@ export const placeOrder = createServerFn({ method: "POST" })
   });
 
 export const getTrackedOrder = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) => z.object({ token: z.string().min(10).max(120) }).parse(data))
+  .inputValidator((data: unknown) => z.object({ token: z.string().trim().min(1).max(120) }).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order, error } = await supabaseAdmin.rpc("get_tracked_order", { p_token: data.token });
