@@ -15,7 +15,10 @@ type Search = { t?: string };
 export const Route = createFileRoute("/track")({
   validateSearch: (search: Record<string, unknown>): Search => {
     const out: Search = {};
-    if (typeof search["t"] === "string") out.t = search["t"].slice(0, 120);
+    if (typeof search["t"] === "string") {
+      const cleaned = search["t"].trim().replace(/^#/, "").slice(0, 120);
+      if (cleaned) out.t = cleaned;
+    }
     return out;
   },
   head: () => ({
@@ -64,7 +67,9 @@ function TrackPage() {
               e.preventDefault();
               const value = input.trim();
               if (!value) return;
-              const token = value.includes("t=") ? value.split("t=").pop()!.split("&")[0]! : value;
+              const raw = value.includes("t=") ? value.split("t=").pop()!.split("&")[0]! : value;
+              const token = raw.replace(/^#/, "").trim();
+              if (!token) return;
               navigate({ to: "/track", search: { t: token } });
             }}
             className="surface-card mx-auto max-w-lg p-6"
