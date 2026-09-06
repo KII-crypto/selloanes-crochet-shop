@@ -275,6 +275,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      find_tracked_order: {
+        Args: { p_number: string; p_phone: string }
+        Returns: Json
+      }
       get_tracked_order: { Args: { p_token: string }; Returns: Json }
       get_week_status: { Args: never; Returns: Json }
       has_role: {
