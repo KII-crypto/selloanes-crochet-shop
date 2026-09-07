@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { SiteShell, Section, Eyebrow } from "@/components/SiteShell";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { Stars, StarPicker } from "@/components/Stars";
-import { getTrackedOrder, submitReview } from "@/lib/storefront.functions";
+import { getTrackedOrder, submitReview, findOrder } from "@/lib/storefront.functions";
 import { rand, formatDate, statusLabel, type TrackedOrder } from "@/lib/shop";
 
 type Search = { t?: string };
@@ -39,7 +39,12 @@ function TrackPage() {
   const { t } = Route.useSearch();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
+  const [orderNumber, setOrderNumber] = useState("");
+  const [phone, setPhone] = useState("");
+  const [looking, setLooking] = useState(false);
   const fetchOrder = useServerFn(getTrackedOrder);
+  const lookup = useServerFn(findOrder);
+
 
   const query = useQuery({
     queryKey: ["tracking", t],
