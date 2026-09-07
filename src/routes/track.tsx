@@ -39,7 +39,12 @@ function TrackPage() {
   const { t } = Route.useSearch();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
+  const [orderNumber, setOrderNumber] = useState("");
+  const [phone, setPhone] = useState("");
+  const [looking, setLooking] = useState(false);
   const fetchOrder = useServerFn(getTrackedOrder);
+  const lookup = useServerFn(findOrder);
+
 
   const query = useQuery({
     queryKey: ["tracking", t],
