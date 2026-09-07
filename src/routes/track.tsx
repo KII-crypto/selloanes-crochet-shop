@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { SiteShell, Section, Eyebrow } from "@/components/SiteShell";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { Stars, StarPicker } from "@/components/Stars";
-import { getTrackedOrder, submitReview } from "@/lib/storefront.functions";
+import { getTrackedOrder, submitReview, findOrder } from "@/lib/storefront.functions";
 import { rand, formatDate, statusLabel, type TrackedOrder } from "@/lib/shop";
 
 type Search = { t?: string };
