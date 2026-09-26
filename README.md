@@ -69,4 +69,4 @@ Creator
 
 KII
 
-An independent technology project exploring AI-assisted web development and practical digital solutions for small businesses.
+An independent technology project exploring AI-assisted web development and practical digital solutions for small businesses
